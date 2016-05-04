@@ -55,7 +55,21 @@ class PgDb:
         
         if self.debug == True:
             self.info("Connecté à %s" % self.bdd)
-            
+
+    def connect_to_db(self, db_name):
+        """
+        Disconnect then connect to new database.
+        """
+        self.disconnect()
+        self.bdd = db_name
+        try:
+            self.con = psycopg2.connect(host=self.host,user=self.lgn, 
+                                            password=self.pwd, database=self.bdd)  
+            self.cur = self.con.cursor(cursor_factory = 
+                                        psycopg2.extras.RealDictCursor)                                        
+        except psycopg2.DatabaseError, e:
+            self.error("%s" % e) 
+        
     def info(self, msg):
         print "%s PgDb > %s" % (datetime.now().strftime('%Y-%m-%d %H:%M'), msg)
         
