@@ -150,7 +150,7 @@ class PgDb:
             if df == True:
                 df = psql.frame_query(sql, con=self.con)
                 
-                if len(df) == 0:
+                if len(df) == 0 and self.debug is True:
                     self.warning("... Table vide")
                 
                 if self.debug == True:
