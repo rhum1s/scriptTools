@@ -179,7 +179,7 @@ class PgDb:
             if self.debug == True:
                 self.info("Execution - %s" %sql)
             
-            psql.execute(sql, con=self.con, cur=self.cur)
+            psql.execute(u"%s" % sql, con=self.con, cur=self.cur)
             self.con.commit()
 
             if self.debug == True:
