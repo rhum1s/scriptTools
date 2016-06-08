@@ -16,21 +16,22 @@ class MysqlDb:
     Objet pour se connecter et faire des requetes sur mysql.
     Ouvre automatiquement une connection à la création.
     """
-    def __init__(self, config_file, debug=False, con=None, cur=None):
+    def __init__(self, config_file, config_section="Connection", debug=False, con=None, cur=None):
         """
         Initialisation et connection
         """        
         # Lecture de la configuration
         if os.path.isfile(config_file):
             self.config_file = config_file
+            self.config_section = config_section
          
             self.config = ConfigParser.ConfigParser()
             self.config.read(config_file)
             
-            self.host   = self.ConfigSectionMap(self.config, "Connection")['host']  
-            self.lgn    = self.ConfigSectionMap(self.config, "Connection")['lgn'] 
-            self.pwd    = self.ConfigSectionMap(self.config, "Connection")['pwd'] 
-            self.bdd    = self.ConfigSectionMap(self.config, "Connection")['bdd'] 
+            self.host   = self.ConfigSectionMap(self.config, self.config_section)['host']  
+            self.lgn    = self.ConfigSectionMap(self.config, self.config_section)['lgn'] 
+            self.pwd    = self.ConfigSectionMap(self.config, self.config_section)['pwd'] 
+            self.bdd    = self.ConfigSectionMap(self.config, self.config_section)['bdd'] 
             self.debug  = debug
         else:
             self.error("%s is doesn't exists." % config_file, exit=True)
@@ -132,5 +133,9 @@ if __name__ == "__main__":
     db = MysqlDb("configs/websig.cfg", debug=True)
     print db.select("SELECT distinct annee FROM emissions;")
     db.execute("DROP TABLE IF EXISTS toto;")
+    db.disconnect()
+    
+    # Utilisation d'une section spécifique d'un fichier de config
+    db = MysqlDb("configs/global.cfg", "websig", debug=True)
     db.disconnect()
     

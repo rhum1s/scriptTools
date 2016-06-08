@@ -21,22 +21,23 @@ class PgDb:
     Nécessite un fichier de configuration *.cfg.
     Ouvre automatiquement une connexion à la création de l'objet.
     """
-    def __init__(self, config_file, debug=False, con=None, cur=None):
+    def __init__(self, config_file, config_section="Connection", debug=False, con=None, cur=None):
         """
         Initialisation et connection
         """        
         # Lecture de la configuration
         if os.path.isfile(config_file):
             self.config_file = config_file
+            self.config_section = config_section
          
             self.config = ConfigParser.ConfigParser()
             self.config.read(config_file)
             
-            self.host   = self.ConfigSectionMap(self.config, "Connection")['host']  
-            self.lgn    = self.ConfigSectionMap(self.config, "Connection")['lgn'] 
-            self.pwd    = self.ConfigSectionMap(self.config, "Connection")['pwd'] 
-            self.bdd    = self.ConfigSectionMap(self.config, "Connection")['bdd']
-            self.port   = self.ConfigSectionMap(self.config, "Connection")['port'] 
+            self.host   = self.ConfigSectionMap(self.config, self.config_section)['host']  
+            self.lgn    = self.ConfigSectionMap(self.config, self.config_section)['lgn'] 
+            self.pwd    = self.ConfigSectionMap(self.config, self.config_section)['pwd'] 
+            self.bdd    = self.ConfigSectionMap(self.config, self.config_section)['bdd']
+            self.port   = self.ConfigSectionMap(self.config, self.config_section)['port'] 
             self.debug  = debug
         else:
             self.error("%s is doesn't exists." % config_file, exit=True)
@@ -260,3 +261,7 @@ if __name__ == "__main__":
         plt.rcParams['figure.figsize'] = (18,11)
         gdf.plot(column='val', colormap='YlOrRd', scheme='QUANTILES', k=8)
         plt.show()
+        
+    # Utilisation d'une section spécifique d'un fichier de config
+    db = PgDb("configs/global.cfg", config_section="inv", debug=True)
+    db.disconnect()
