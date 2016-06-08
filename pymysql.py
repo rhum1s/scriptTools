@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 """
-PyPg - R. Souweine, 2016.
+PyMySQL - R. Souweine, 2016.
 """
 
 import os
