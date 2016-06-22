@@ -18,29 +18,44 @@ warnings.simplefilter(action = "ignore", category = FutureWarning)
 class PgDb:
     """
     Crée un objet base de données, connecté à PostgreSQL.
-    Nécessite un fichier de configuration *.cfg.
+    Nécessite 
+        - Un fichier de configuration *.cfg 
+        - Ou une liste [host, lgn, pwd, bdd, port] avec la variable cfg_list.
     Ouvre automatiquement une connexion à la création de l'objet.
     """
-    def __init__(self, config_file, config_section="Connection", debug=False, con=None, cur=None):
+    def __init__(self, config_file="", config_section="Connection", debug=False, con=None, cur=None, cfg_list=[]):
         """
         Initialisation et connection
-        """        
-        # Lecture de la configuration
-        if os.path.isfile(config_file):
-            self.config_file = config_file
-            self.config_section = config_section
-         
-            self.config = ConfigParser.ConfigParser()
-            self.config.read(config_file)
-            
-            self.host   = self.ConfigSectionMap(self.config, self.config_section)['host']  
-            self.lgn    = self.ConfigSectionMap(self.config, self.config_section)['lgn'] 
-            self.pwd    = self.ConfigSectionMap(self.config, self.config_section)['pwd'] 
-            self.bdd    = self.ConfigSectionMap(self.config, self.config_section)['bdd']
-            self.port   = self.ConfigSectionMap(self.config, self.config_section)['port'] 
-            self.debug  = debug
+        """   
+        if len(cfg_list) > 0:
+            # Lecture de la configuration à partir de la liste
+                self.config_file = None
+                self.config_section = None
+                self.config = None
+                
+                self.host   = cfg_list[0]  
+                self.lgn    = cfg_list[1] 
+                self.pwd    = cfg_list[2] 
+                self.bdd    = cfg_list[3]
+                self.port   = cfg_list[4] 
+                self.debug  = debug            
         else:
-            self.error("%s is doesn't exists." % config_file, exit=True)
+            # Lecture de la configuration avec le fichier
+            if os.path.isfile(config_file):
+                self.config_file = config_file
+                self.config_section = config_section
+             
+                self.config = ConfigParser.ConfigParser()
+                self.config.read(config_file)
+                
+                self.host   = self.ConfigSectionMap(self.config, self.config_section)['host']  
+                self.lgn    = self.ConfigSectionMap(self.config, self.config_section)['lgn'] 
+                self.pwd    = self.ConfigSectionMap(self.config, self.config_section)['pwd'] 
+                self.bdd    = self.ConfigSectionMap(self.config, self.config_section)['bdd']
+                self.port   = self.ConfigSectionMap(self.config, self.config_section)['port'] 
+                self.debug  = debug
+            else:
+                self.error("%s is doesn't exists." % config_file, exit=True)
         
         # Connection à  pgsql
         try:
@@ -265,3 +280,4 @@ if __name__ == "__main__":
     # Utilisation d'une section spécifique d'un fichier de config
     db = PgDb("configs/global.cfg", config_section="inv", debug=True)
     db.disconnect()
+    
